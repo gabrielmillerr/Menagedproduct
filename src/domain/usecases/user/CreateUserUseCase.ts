@@ -14,5 +14,7 @@ export class CreateUser {
     const newUser = await User.create(name, email, password);
 
     await this.userRepository.save(newUser);
+
+    return User.with(newUser);
   }
 }

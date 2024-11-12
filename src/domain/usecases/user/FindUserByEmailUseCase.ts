@@ -1,10 +1,10 @@
+import { User } from "@/domain/entities/user";
 import { UserRepository } from "../../repositories/UserRepository";	
-import { PublicUserDTO } from "@/domain/dtos/userDTO";
 
 export class FindUserByEmailUseCase {
   constructor(private userRepository: UserRepository) {}
 
-  async execute(email: string): Promise<PublicUserDTO | null> {
+  async execute(email: string): Promise<User | null> {
     const user = await this.userRepository.findByEmail(email);
 
     if(!user) {

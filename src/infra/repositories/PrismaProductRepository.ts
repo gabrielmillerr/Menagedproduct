@@ -51,9 +51,11 @@ export class PrismaProductRepository implements ProductRepository {
   async update(id: string, data: Partial<Product>): Promise<Product> {
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data,
+      data: {
+        stock: data.stock,
+      },
     });
-
+  
     return Product.with({
       id: updatedProduct.id,
       name: updatedProduct.name,

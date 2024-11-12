@@ -11,9 +11,10 @@ export class MenagedProductStock {
     }
 
     product.increaseStock(quantity);
-    await this.productRepository.update(id, product);
-    
-    return product;
+    const updatedProduct = await this.productRepository.update(id, {
+      stock: product.stock
+    })
+    return updatedProduct;
   }
 
   async decreaseStock(id: string, quantity: number) {
@@ -22,10 +23,10 @@ export class MenagedProductStock {
     if (!product) {
       throw new Error('Product not found');
     }
-
     product.decreaseStock(quantity);
-    await this.productRepository.update(id, product);
-    
-    return product;
+    const updatedProduct = await this.productRepository.update(id, {
+      stock: product.stock
+    })
+    return updatedProduct;
   }
 }
