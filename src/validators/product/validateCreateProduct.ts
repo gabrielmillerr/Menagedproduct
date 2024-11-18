@@ -30,6 +30,14 @@ const productSchema = Joi.object({
       'number.integer': 'Stock must be an integer.',
       'number.min': 'Stock cannot be negative.',
     }),
+  categories: Joi.array()
+    .items({id: Joi.string().uuid()})
+    .optional()
+    .default([])
+    .messages({
+      'array.base': 'Categories must be an array of strings.',
+      'string.uuid': 'Categories must be valid UUIDs.',
+    }),  
 });
 
 export const validateCreateProduct = (req, res, next) => {

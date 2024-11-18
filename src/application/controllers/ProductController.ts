@@ -21,8 +21,8 @@ export class ProductController {
 
   async create(req: Request, res: Response): Promise<void> {
     try {
-      const { name, price, stock } = req.body;
-      const product = await this.createProduct.execute(name, price, stock ?? 0);
+      const { name, price, stock, categories } = req.body;
+      const product = await this.createProduct.execute(name, price, stock ?? 0, categories);
       const productDTO = CreateProductDTO.fromProduct(product);
       res.status(201).json(productDTO);
     } catch(error) {
@@ -50,6 +50,17 @@ export class ProductController {
   async findAll(req: Request, res: Response): Promise<void> {
     try {
       const products = await this.findProduct.findAll();
+      const productDTOs = products.map(FindAllProductDTO.fromProduct);
+      res.status(200).json(productDTOs);
+    } catch(error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async findByCategory(req: Request, res: Response): Promise<void> {
+    try {
+      const { id } = req.params;
+      const products = await this.findProduct.findByCategory(id);
       const productDTOs = products.map(FindAllProductDTO.fromProduct);
       res.status(200).json(productDTOs);
     } catch(error) {

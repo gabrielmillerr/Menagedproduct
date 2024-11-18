@@ -1,5 +1,5 @@
-import { ProductRepository } from "../../repositories/ProductRepository";
-import { Product } from "../../entities/Product";
+import { ProductRepository } from "@/domain/repositories/ProductRepository";
+import { Product } from "@/domain/entities/Product";
 
 export class FindProduct {
   constructor(private readonly productRepository: ProductRepository) {}
@@ -10,5 +10,9 @@ export class FindProduct {
 
   async findAll(): Promise<Product[]> {
     return this.productRepository.findAll();
+  }
+
+  async findByCategory (categoryId: string): Promise<Product[]> {
+    return this.productRepository.findByCategory(categoryId);
   }
 }

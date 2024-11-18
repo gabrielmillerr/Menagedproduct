@@ -1,10 +1,12 @@
+import { Category } from '@/domain/entities/Category';
 import { randomUUID } from 'crypto';
 
 export type ProductProps = {
   id: string,
   name: string,
   price: number,
-  stock?: number
+  stock?: number,
+  categories: Category[]
 }
 
 export class Product {
@@ -13,12 +15,13 @@ export class Product {
     this.validate();
   }
 
-  public static create(name: string, price: number, stock: number) {
+  public static create(name: string, price: number, stock: number, categories: Category[]) {
     return new Product({
       id: randomUUID().toString(),
       name,
       price,
-      stock
+      stock,
+      categories
     });
   }
 
@@ -50,6 +53,10 @@ export class Product {
 
   public get stock(): number {
     return this.props.stock ?? 0;
+  }
+
+  public get categories(): Category[] {
+    return this.props.categories;
   }
 
   public increaseStock(quantity: number) {

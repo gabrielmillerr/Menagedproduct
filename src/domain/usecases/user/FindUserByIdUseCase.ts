@@ -1,4 +1,4 @@
-import { User } from "@/domain/entities/user";
+import { User } from "@/domain/entities/User";
 import { UserRepository } from "../../repositories/UserRepository";
 
 export class FindUserByIdUseCase {

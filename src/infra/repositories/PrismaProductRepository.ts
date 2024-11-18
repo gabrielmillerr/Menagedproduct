@@ -1,24 +1,30 @@
-import { PrismaClient } from "@prisma/client";
-import { Product } from "../../domain/entities/Product";
-import { ProductRepository } from "../../domain/repositories/ProductRepository";
-import prisma from "../../prisma";
-
+import { ProductRepository } from "@/domain/repositories/ProductRepository";
+import prisma from "@/prisma";
+import { Product } from "@/domain/entities/Product";
+import { Category } from "@/domain/entities/Category";
 export class PrismaProductRepository implements ProductRepository {
   async save(product: Product): Promise<void> {
+
+    const teste = product;
+
     await prisma.product.create({
       data: {
         id: product.id,
         name: product.name,
         price: product.price,
-        stock: product.stock
+        stock: product.stock,
+        categories: {
+          connect: product.categories.map(category => ({ id: category.id }))
+        },
       }
     })
   }
 
   async findById(id: string): Promise<Product | null> {
     const product = await prisma.product.findUnique({
-      where: { id}
-    })
+      where: { id },
+      include: { categories: true }
+    });
 
     if (!product) return null;
 
@@ -26,41 +32,98 @@ export class PrismaProductRepository implements ProductRepository {
       id: product.id,
       name: product.name,
       price: product.price,
-      stock: product.stock
+      stock: product.stock,
+      categories: product.categories.map(category => Category.with({
+        id: category.id,
+        name: category.name
+      }))
     })
   }
 
   async findByName(name: string): Promise<Product | null> {
-    const product = await prisma.product.findFirst({ where: { name } });
-    return product ? Product.with(product) : null;
+    const product = await prisma.product.findFirst({ 
+      where: { name },
+      include: { categories: true }
+    }
+    );
+
+    if(!product) return null;
+
+    return Product.with({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      categories: product.categories.map(category => Category.with({
+        id: category.id,
+        name: category.name
+      }))
+    });
   }
 
   async findAll(): Promise<Product[]> {
-    const products = await prisma.product.findMany();
+    const products = await prisma.product.findMany({
+      include: { categories: true }
+    });
 
     return products.map((product) => {
       return Product.with({
         id: product.id,
         name: product.name,
         price: product.price,
-        stock: product.stock
+        stock: product.stock,
+        categories: product.categories.map(category => Category.with({
+          id: category.id,
+          name: category.name
+        }))
       })	
     })
   }
 
+  async findByCategory(categoryId: string): Promise<Product[]> {
+    const products = await prisma.product.findMany({
+      where: {
+        categories: {
+          some: {
+            id: categoryId
+          }
+        }
+      },
+      include: { categories: true }
+    })
+
+    return products.map(product => {
+      return Product.with({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        categories: product.categories.map(category => Category.with({
+          id: category.id,
+          name: category.name
+        }))
+      });
+    });
+  }
+
   async update(id: string, data: Partial<Product>): Promise<Product> {
-    const updatedProduct = await prisma.product.update({
+    const product = await prisma.product.update({
       where: { id },
       data: {
         stock: data.stock,
       },
+      include: { categories: true }
     });
   
     return Product.with({
-      id: updatedProduct.id,
-      name: updatedProduct.name,
-      price: updatedProduct.price,
-      stock: updatedProduct.stock,
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      categories: product.categories.map(category => Category.with({
+        id: category.id,
+        name: category.name
+      }))
     });
   }
 }

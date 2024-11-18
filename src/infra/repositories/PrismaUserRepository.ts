@@ -1,8 +1,6 @@
 import { UserRepository } from "../../domain/repositories/UserRepository";
-// import { UserDTO, PublicUserDTO, createUserDTO, createPublicUserDTO } from '@/domain/dtos/userDTO';
 import prisma from "../../prisma"; 
-import { User } from "@/domain/entities/user"
-
+import { User } from "@/domain/entities/User"
 export class PrismaUserRepository implements UserRepository {
   async save(user: User): Promise<User> {
     const createdUser = await prisma.user.create({

@@ -8,13 +8,14 @@ import { validateUpdateProduct } from '../../validators/product/validateUpdatePr
 
 const router = Router();
 
-router.get('/products/:id', validateFindProductById, (req, res) => productController.findById(req, res));
-router.get('/products', (req, res) => productController.findAll(req, res));
+router.get('/:id', validateFindProductById, (req, res) => productController.findById(req, res));
+router.get('/', (req, res) => productController.findAll(req, res));
+router.get('/category/:id', (req, res) => productController.findByCategory(req, res));
 
-router.post('/products/create', validateCreateProduct, (req, res) => productController.create(req, res));
-router.post('/products/increase-stock', validateIncreaseStock, (req, res) => productController.increaseStock(req, res));
-router.post('/products/decrease-stock', validateDecreaseStock, (req, res) => productController.decreaseStock(req, res));
+router.post('/create', validateCreateProduct, (req, res) => productController.create(req, res));
+router.post('/increase-stock', validateIncreaseStock, (req, res) => productController.increaseStock(req, res));
+router.post('/decrease-stock', validateDecreaseStock, (req, res) => productController.decreaseStock(req, res));
 
-router.put('/products/:id', validateUpdateProduct, (req, res) => productController.update(req, res))
+router.put('/:id', validateUpdateProduct, (req, res) => productController.update(req, res))
 
 export { router as productRoutes };
