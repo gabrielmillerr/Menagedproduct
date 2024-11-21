@@ -1,11 +1,10 @@
 import { Category } from "@/domain/entities/Category";
-
 import { CategoryRepository } from "@/domain/repositories/CategoryRepository";
 import prisma from "@/prisma";
 
 export class PrismaCategoryRepository implements CategoryRepository {
-  async save(category: Category): Promise<void> {
-    await prisma.category.create({
+  async save(category: Category): Promise<Category | null> {
+    const createdCategory = await prisma.category.create({
       data: {
         id: category.id,
         name: category.name,
@@ -13,6 +12,11 @@ export class PrismaCategoryRepository implements CategoryRepository {
           connect: category.products.map(product => ({ id: product.id }))
         }
       }
+    })
+
+    return Category.with({
+      id: createdCategory.id,
+      name: createdCategory.name
     })
   }
 
@@ -22,8 +26,8 @@ export class PrismaCategoryRepository implements CategoryRepository {
       include: { products: true }
     })
 
-    if (!category) return null;
-
+    if (!category) return null
+  
     return Category.with({
       id: category.id,
       name: category.name,
@@ -35,11 +39,14 @@ export class PrismaCategoryRepository implements CategoryRepository {
       include: { products: true }
     })
 
+    if (!categories) return []
+
     return categories.map(category => Category.with({
       id: category.id,
       name: category.name,
     }))
   }
+
   async update(id: string, data: Partial<Category>): Promise<Category> {
     const category = await prisma.category.update({
       where: { id },

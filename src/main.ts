@@ -3,6 +3,7 @@ import { productRoutes } from '@/presentation/routes/productRoutes';
 import { userRoutes } from '@/presentation/routes/userRoutes';
 import { categoryRoutes} from '@/presentation/routes/categoryRoutes'
 import { authRoutes } from '@/presentation/routes/authRoutes';
+import { errorHandler } from '@/presentation/middleware/middlewareReponse';
 
 const app = express();
 app.use(express.json());
@@ -11,6 +12,8 @@ app.use('/products', productRoutes);
 app.use('/users', userRoutes)
 app.use('/categories', categoryRoutes)
 app.use('/login', authRoutes)
+
+app.use(errorHandler);
 
 const PORT = 3000;
 app.listen(PORT, () => {

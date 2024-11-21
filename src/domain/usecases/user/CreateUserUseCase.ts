@@ -1,5 +1,7 @@
 import { UserRepository } from "@/domain/repositories/UserRepository"
 import { User } from "@/domain/entities/User"
+import { CustomError } from "@/shared/utils/CustomError";
+import { statusCode } from "@/shared/utils/statusCode";
 
 export class CreateUser {
   constructor( private userRepository: UserRepository) {}
@@ -8,13 +10,11 @@ export class CreateUser {
     const user = await this.userRepository.findByEmail(email);
 
     if(user) {
-      throw new Error("Email already exists");
+      throw new CustomError("Email already exists", statusCode.CONFLICT);
     }
 
     const newUser = await User.create(name, email, password);
 
-    await this.userRepository.save(newUser);
-
-    return User.with(newUser);
+    return await this.userRepository.save(newUser);
   }
 }

@@ -1,5 +1,7 @@
 import { Category } from "@/domain/entities/Category";
 import { CategoryRepository } from '@/domain/repositories/CategoryRepository';
+import { CustomError } from '@/shared/utils/CustomError'
+import { statusCode } from '@/shared/utils/statusCode';
 
 export class CreateCategory {
   constructor(private readonly categoryRepository: CategoryRepository) {}
@@ -8,12 +10,10 @@ export class CreateCategory {
     const category = await this.categoryRepository.findById(name);
 
     if (category) {
-      throw new Error('Category already exists');
+      throw new CustomError('Category already exists', statusCode.CONFLICT);
     }
-
+    
     const newCategory = Category.create(name);
-    await this.categoryRepository.save(newCategory);
-
-    return newCategory;
+    return this.categoryRepository.save(newCategory);
   }
 }

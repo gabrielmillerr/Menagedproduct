@@ -1,6 +1,7 @@
 import { UserRepository } from '@/domain/repositories/UserRepository';
 import { JwtService } from '@/domain/services/jwt/JwtService';
-import { ResponseHandler, Response } from '@/shared/utils/ResponseHandler';
+import { CustomError } from '@/shared/utils/CustomError';
+import { statusCode } from '@/shared/utils/statusCode';
 import bcrypt from 'bcrypt';
 
 export type jwtPayload = {
@@ -14,17 +15,17 @@ export class AuthenticateUser {
     private jwtService: JwtService
   ) {}
 
-  async execute(email: string, password: string): Promise<Response<any>> {
+  async execute(email: string, password: string): Promise<any> {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new CustomError('User not found', statusCode.NOT_FOUND);
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      throw new Error('Invalid password');
+      throw new CustomError('Invalid password', statusCode.FORBIDDEN);
     }
 
     const payload = {
@@ -33,6 +34,6 @@ export class AuthenticateUser {
     };
 
     const token = await this.jwtService.generateToken(payload);
-    return ResponseHandler.success({token});
+    return token;
   }
 }

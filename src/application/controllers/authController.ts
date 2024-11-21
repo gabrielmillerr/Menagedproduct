@@ -1,10 +1,10 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AuthenticateUser } from '@/domain/usecases/Auth/AuthenticateUser';
 
 export class AuthController {
  constructor(private authService: AuthenticateUser) {}
  
-  async login(req: Request, res: Response): Promise<void> {
+  async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -14,9 +14,9 @@ export class AuthController {
 
     try {
       const token = await this.authService.execute(email, password);
-      res.status(200).json({ token });
+      res.status(200).json({ token});
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
 }

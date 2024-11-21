@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { CreateProduct } from "../../domain/usecases/product/CreateProduct";
 import { MenagedProductStock } from "../../domain/usecases/product/MenagedProductStock"
 import { FindProduct } from "../../domain/usecases/product/FindProduct"
@@ -19,78 +19,73 @@ export class ProductController {
     private updateProduct: UpdateProduct
   ) {}
 
-  async create(req: Request, res: Response): Promise<void> {
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { name, price, stock, categories } = req.body;
       const product = await this.createProduct.execute(name, price, stock ?? 0, categories);
       const productDTO = CreateProductDTO.fromProduct(product);
       res.status(201).json(productDTO);
     } catch(error) {
-       res.status(400).json({ message: error.message });
+        next(error);
     }
   }
 
-  async findById(req: Request, res: Response): Promise<void> {
+  async findById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const product = await this.findProduct.findById(id);
 
-      if(!product) {
-        res.status(404).json({ message: 'Product not found' });
-        return
-      }
-
       const productDTO = FindByIdProductDTO.fromProduct(product);
       res.status(200).json(productDTO);
     } catch(error) {
-      res.status(500).json({ message: error.message });
+        next(error);
     }
   }
 
-  async findAll(req: Request, res: Response): Promise<void> {
+  async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const products = await this.findProduct.findAll();
       const productDTOs = products.map(FindAllProductDTO.fromProduct);
       res.status(200).json(productDTOs);
     } catch(error) {
-      res.status(400).json({ message: error.message });
+        next(error);
     }
   }
 
-  async findByCategory(req: Request, res: Response): Promise<void> {
+  async findByCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const products = await this.findProduct.findByCategory(id);
       const productDTOs = products.map(FindAllProductDTO.fromProduct);
       res.status(200).json(productDTOs);
     } catch(error) {
-      res.status(400).json({ message: error.message });
+        next(error);
     }
   }
 
-  async increaseStock(req: Request, res: Response): Promise<void> {
+  async increaseStock(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id, quantity } = req.body;
       const product = await this.menageProductStock.increaseStock(id, quantity);
       const productDTO = IncreaseStockProductDTO.fromProduct(product);
       res.status(200).json(productDTO);
     } catch(error) {
-      res.status(400).json({ message: error.message });
+        next(error);
     }
   }
 
-  async decreaseStock(req: Request, res: Response): Promise<void> {
+  async decreaseStock(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id, quantity } = req.body;
       const product = await this.menageProductStock.decreaseStock(id, quantity);
       const productDTO = DecreaseStockProductDTO.fromProduct(product);
       res.status(200).json(productDTO);
     } catch(error) {
-      res.status(400).json({ message: error.message });
+        next(error);
     }
   }
 
-  async update(req: Request, res: Response): Promise<void> {
+  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
       const data = req.body;
@@ -98,7 +93,7 @@ export class ProductController {
       const productDTO = UpdateProductDTO.fromProduct(product);
       res.status(200).json(productDTO);
     } catch(error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
 }

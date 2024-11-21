@@ -4,8 +4,8 @@ import { validateCreateUser } from "@/validators/user/validateCreateUser"
 
 const router = Router();
 
-router.get('/:id', (req, res) => userController.findById(req, res));
-router.get('/:email', (req, res) => userController.findByEmail(req, res));
-router.post('/create', validateCreateUser, (req, res) => userController.create(req, res));
+router.get('/:id', (req, res, next) => userController.findById(req, res, next));
+router.get('/:email', (req, res, next) => userController.findByEmail(req, res, next));
+router.post('/create', validateCreateUser, (req, res, next) => userController.create(req, res, next));
 
 export { router as userRoutes }

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { CreateCategory } from '@/domain/usecases/category/CreateCategory';
 import { UpdateCategory } from '@/domain/usecases/category/UpdateCategory';
 import { FindCategory } from '@/domain/usecases/category/FindCatergory';
@@ -14,7 +14,7 @@ export class CategoryController {
     private findCategory: FindCategory
   ) {}
 
-  async create(req: Request, res: Response): Promise<void> {
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { name } = req.body;
     
     try {
@@ -23,32 +23,33 @@ export class CategoryController {
 
       res.status(201).json(categoryDTO);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
 
-  async findAll(req: Request, res: Response): Promise<void> {
+  async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const categories = await this.findCategory.findAll();
       const categoriesDTO = categories.map(FindAllCategory.fromCategory);
       res.status(200).json(categoriesDTO);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
 
-  async findById(req: Request, res: Response): Promise<void> {
+  async findById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
+      console.log(id);
       const category = await this.findCategory.findById(id);
       const categoryDTO = CreateCategoryDTO.fromCategory(category);
       res.status(200).json(categoryDTO);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
 
-  async update(req: Request, res: Response): Promise<void> {
+  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     const { id } = req.params;
 
     try {
@@ -58,8 +59,7 @@ export class CategoryController {
       
       res.status(200).json(productDTO);
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
-
 }

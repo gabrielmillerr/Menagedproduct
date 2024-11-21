@@ -3,11 +3,8 @@ import prisma from "@/prisma";
 import { Product } from "@/domain/entities/Product";
 import { Category } from "@/domain/entities/Category";
 export class PrismaProductRepository implements ProductRepository {
-  async save(product: Product): Promise<void> {
-
-    const teste = product;
-
-    await prisma.product.create({
+  async save(product: Product): Promise<Product | null> {
+    const productCreated = await prisma.product.create({
       data: {
         id: product.id,
         name: product.name,
@@ -16,7 +13,19 @@ export class PrismaProductRepository implements ProductRepository {
         categories: {
           connect: product.categories.map(category => ({ id: category.id }))
         },
-      }
+      },
+      include: { categories: true }
+    })
+
+    return Product.with({
+      id: productCreated.id,
+      name: productCreated.name,
+      price: productCreated.price,
+      stock: productCreated.stock,
+      categories: productCreated.categories.map(category => Category.with({
+        id: category.id,
+        name: category.name
+      }))
     })
   }
 
@@ -66,6 +75,8 @@ export class PrismaProductRepository implements ProductRepository {
       include: { categories: true }
     });
 
+    if (!products) return [];
+
     return products.map((product) => {
       return Product.with({
         id: product.id,
@@ -91,6 +102,8 @@ export class PrismaProductRepository implements ProductRepository {
       },
       include: { categories: true }
     })
+
+    if (!products) return [];
 
     return products.map(product => {
       return Product.with({

@@ -2,7 +2,7 @@
 import { Product } from "@/domain/entities/Product";
 
 export interface ProductRepository {
-  save(product: Product): Promise<void>;
+  save(product: Product): Promise<Product | null>;
   findById(id: string): Promise<Product | null>;
   findByName(name: string): Promise<Product | null>;
   findAll(): Promise<Product[]>;

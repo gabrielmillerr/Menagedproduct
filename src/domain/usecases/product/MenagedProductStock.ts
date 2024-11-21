@@ -1,3 +1,5 @@
+import { CustomError } from "@/shared/utils/CustomError";
+import { statusCode} from "@/shared/utils/statusCode";
 import { ProductRepository } from "../../repositories/ProductRepository";
 
 export class MenagedProductStock {
@@ -7,7 +9,7 @@ export class MenagedProductStock {
     const product = await this.productRepository.findById(id);
 
     if (!product) {
-      throw new Error('Product not found');
+      throw new CustomError('Product not found', statusCode.NOT_FOUND);
     }
 
     product.increaseStock(quantity);
@@ -21,7 +23,7 @@ export class MenagedProductStock {
     const product = await this.productRepository.findById(id);
 
     if (!product) {
-      throw new Error('Product not found');
+      throw new CustomError('Product not found', statusCode.NOT_FOUND);
     }
     product.decreaseStock(quantity);
     const updatedProduct = await this.productRepository.update(id, {
