@@ -15,7 +15,7 @@ export class AuthenticateUser {
     private jwtService: JwtService
   ) {}
 
-  async execute(email: string, password: string): Promise<any> {
+  async execute(email: string, password: string): Promise<{ token: string, userId: string }> {
     const user = await this.userRepository.findByEmail(email);
 
     if (!user) {
@@ -34,6 +34,6 @@ export class AuthenticateUser {
     };
 
     const token = await this.jwtService.generateToken(payload);
-    return token;
+    return { token, userId: user.id };
   }
 }
